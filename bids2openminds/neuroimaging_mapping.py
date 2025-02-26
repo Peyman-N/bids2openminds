@@ -1,13 +1,16 @@
 import openminds.latest.neuroimaging as neuroimaging
 import openminds.latest.controlled_terms as controlled_terms
 import openminds.latest.core as omcore
+from . import mapping
 
 
 def extract_metadata(metadata, property):
-    if dict[property] in metadata:
-        return metadata[dict[property]]
+    property_name_bids=mapping.bids2openMINDS_prop_dict[property]
+    if property_name_bids in metadata:
+        return metadata[property_name_bids]
     else:
         return None
+
 
 def create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name):
     def _create_mri_scanner(metadata, dataset_full_name):
@@ -64,7 +67,7 @@ def create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name):
         )
 
         return mri_scanner
-    
+
     def _eq(mri_scanner1, mri_scanner2):
 
         # If both have digital identifiers and they are same that means they are the same device
@@ -88,29 +91,47 @@ def create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name):
         return False
 
     new_mri_scanner = _create_mri_scanner(metadata, dataset_full_name)
-    
+
     for scanner in mri_scanners:
         if _eq(scanner, new_mri_scanner):
             return scanner
-    
+
     collection.add(new_mri_scanner)
     mri_scanners.append(new_mri_scanner)
     return new_mri_scanner
 
+def create_mr_acquisition_type(metadata):
+    mr_acquisition_type_text=extract_metadata(metadata, "MRAcquisitionType")
+    if mr_acquisition_type_text is None:
+        return None
+    elif mr_acquisition_type_text in mapping.MAP_2_MRACQUISITIONTYPE:
+        return controlled_terms.MRAcquisitionType.by_name(mr_acquisition_type_text)
+    else:
+        return None
 
-def create_mri_scanner_usage(metadata, mri_scanner, dataset_full_name):
-    if 
+def 
 
-def create_functional_MRI_acquisition():
+def create_fMRI_scanner_usage(metadata, mri_scanner, dataset_full_name):
+    mr_acquisition_type=create_mr_acquisition_type(metadata)
+    mt_state=extract_metadata(metadata, "MTState").strip().lower() == "true"
+
+
+
+def create_fMRI_scanner_usage(metadata, mri_scanner, dataset_full_name):
+
+
+
+def create_fMRI_acquisition():
+    
     return None
 
 
 def create_neuroimaging(bids_layout, collection, subject_dict, dataset_full_name):
     mri_scanners = [],
-    nifti_files=bids_layout.get(extension=["nii.gz","nii"])
+    nifti_files = bids_layout.get(extension=["nii.gz", "nii"])
     for file in nifti_files:
-        metadata=file.get_metadata()
-        entities=file.get_entities()
+        metadata = file.get_metadata()
+        entities = file.get_entities()
         mri_scanner = create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name)
 
         if "session" in entities:
@@ -120,5 +141,5 @@ def create_neuroimaging(bids_layout, collection, subject_dict, dataset_full_name
 
         if "datatype" in entities:
             if entities["datatype"] == "func":
-                create_functional_MRI_acquisition()
-
+                create_fMRI_scanner_usage(metadata, mri_scanner, collection, dataset_full_name)
+                create_fMRI_acquisition(metadata, mri_scanners, collection, dataset_full_name)

@@ -33,96 +33,96 @@ MAP_2_EXPERIMENTAL_APPROACHES = {
 MAP_2_TECHNIQUES = {
     "angio": ["angiography"],
     "M0map": ["equilibrium magnetization mapping"],
-    "FLASH": ["fast-low-angle-shot pulse sequence"], #TODO instance TBD
-    "FLAIR": ["fluid attenuated inversion recovery pulse sequence"], #TODO instance TBD
-    "UNIT1": None, #TODO instance TBD
+    "FLASH": ["fast-low-angle-shot pulse sequence"],  # TODO instance TBD
+    "FLAIR": ["fluid attenuated inversion recovery pulse sequence"],  # TODO instance TBD
+    "UNIT1": None,  # TODO instance TBD
     "inplaneT1": [
-        "T1 pulse sequence", 
+        "T1 pulse sequence",
         "structural magnetic resonance imaging"
-    ], #TODO sMRI
+    ],  # TODO sMRI
     "inplaneT2": [
-        "T2 pulse sequence", 
+        "T2 pulse sequence",
         "structural magnetic resonance imaging"
-    ], #TODO sMRI
-    "R1map": None, #TODO instance TBD
-    "T1map": None, #TODO instance TBD
+    ],  # TODO sMRI
+    "R1map": None,  # TODO instance TBD
+    "T1map": None,  # TODO instance TBD
     "MTVmap": [
         "quantitative magnetic resonance imaging",
         "macromolecular tissue volume image processing"
-    ], #TODO other?
+    ],  # TODO other?
     "MTRmap": [
         "magnetization transfer imaging",
         "magnetization transfer ratio image processing",
         "magnetization transfer pulse sequence"
-    ], #TODO instances
+    ],  # TODO instances
     "MTsat": [
         "magnetization transfer imaging",
         "magnetization transfer saturation image processing",
         "magnetization transfer pulse sequence"
-    ], #TODO instances
+    ],  # TODO instances
     "MWFmap": [
         "myelin water imaging",
         "T2 pulse sequence",
         "myelin water fraction image processing"
-    ], #TODO instances
-    "S0map": None, #TODO instances
-    "R2starmap": None, #TODO instance TBD
-    "T2starmap": None, #TODO instance TBD
-    "PDT2": None, #TODO instance TBD
-    "PDw": None, #TODO instance TBD
-    "PD": None, #TODO instance TBD
-    "PDmap": None, #TODO instance TBD
-    "Chimap": None, #TODO instance TBD
-    "RB1map": None, #TODO instance TBD
-    "TB1map": None, #TODO instance TBD
-    "T1rho": None, #TODO instance TBD
-    "T1w": None, #TODO instance TBD
-    "T2w": None, #TODO instance TBD
-    "T2star": None, #TODO instance TBD
-    "T2starw": None, #TODO instance TBD
-    "R2map": None, #TODO instance TBD
-    "T2map": None, #TODO instance TBD
-    "bold": None, #TODO instance TBD
-    "cbv": None, #TODO instance TBD
-    "phase": None, #TODO instance TBD
-    "defacemask": None, #TODO instance TBD
-    "epi": None, #TODO instance TBD
-    "fieldmap": None, #TODO instance TBD
-    "magnitude": None, #TODO instance TBD
-    "magnitude1": None, #TODO instance TBD
-    "magnitude2": None, #TODO instance TBD
-    "phase1": None, #TODO instance TBD
-    "phase2": None, #TODO instance TBD
-    "phasediff": None, #TODO instance TBD
+    ],  # TODO instances
+    "S0map": None,  # TODO instances
+    "R2starmap": None,  # TODO instance TBD
+    "T2starmap": None,  # TODO instance TBD
+    "PDT2": None,  # TODO instance TBD
+    "PDw": None,  # TODO instance TBD
+    "PD": None,  # TODO instance TBD
+    "PDmap": None,  # TODO instance TBD
+    "Chimap": None,  # TODO instance TBD
+    "RB1map": None,  # TODO instance TBD
+    "TB1map": None,  # TODO instance TBD
+    "T1rho": None,  # TODO instance TBD
+    "T1w": None,  # TODO instance TBD
+    "T2w": None,  # TODO instance TBD
+    "T2star": None,  # TODO instance TBD
+    "T2starw": None,  # TODO instance TBD
+    "R2map": None,  # TODO instance TBD
+    "T2map": None,  # TODO instance TBD
+    "bold": None,  # TODO instance TBD
+    "cbv": None,  # TODO instance TBD
+    "phase": None,  # TODO instance TBD
+    "defacemask": None,  # TODO instance TBD
+    "epi": None,  # TODO instance TBD
+    "fieldmap": None,  # TODO instance TBD
+    "magnitude": None,  # TODO instance TBD
+    "magnitude1": None,  # TODO instance TBD
+    "magnitude2": None,  # TODO instance TBD
+    "phase1": None,  # TODO instance TBD
+    "phase2": None,  # TODO instance TBD
+    "phasediff": None,  # TODO instance TBD
     "dwi": ["diffusion-weighted imaging"],
-    "sbref": None, #TODO instance TBD
-    "asl": None, #TODO instance TBD
-    "m0scan": None, #TODO instance TBD
+    "sbref": None,  # TODO instance TBD
+    "asl": None,  # TODO instance TBD
+    "m0scan": None,  # TODO instance TBD
     "eeg": ["electroencephalography"],
     "ieeg": ["intracranial electroencephalography"],
-    "physio": None, #TODO instance TBD
-    "stim": None, #TODO instance TBD
-    "beh": None, #TODO instance TBD
+    "physio": None,  # TODO instance TBD
+    "stim": None,  # TODO instance TBD
+    "beh": None,  # TODO instance TBD
     "pet": ["positron emission tomography"],
     "2PE": ["two-photon fluorescence microscopy"],
-    "BF": None, #TODO instance TBD
-    "CARS": None, #TODO instance TBD
+    "BF": None,  # TODO instance TBD
+    "CARS": None,  # TODO instance TBD
     "CONF": ["confocal microscopy"],
-    "DIC": None, #TODO instance TBD
-    "DF": None, #TODO instance TBD
-    "FLUO": None, #TODO instance TBD
-    "MPE": None, #TODO instance TBD
-    "NLO": None, #TODO instance TBD
-    "OCT": None, #TODO instance TBD
-    "PC": None, #TODO instance TBD
+    "DIC": None,  # TODO instance TBD
+    "DF": None,  # TODO instance TBD
+    "FLUO": None,  # TODO instance TBD
+    "MPE": None,  # TODO instance TBD
+    "NLO": None,  # TODO instance TBD
+    "OCT": None,  # TODO instance TBD
+    "PC": None,  # TODO instance TBD
     "PLI": ["polarized light microscopy"],
-    "SEM": None, #TODO instance TBD
-    "SPIM": None, #TODO instance TBD
-    "SR": None, #TODO instance TBD
+    "SEM": None,  # TODO instance TBD
+    "SPIM": None,  # TODO instance TBD
+    "SR": None,  # TODO instance TBD
     "TEM": ["transmission electron microscopy"],
-    "uCT": None, #TODO instance TBD
-    "nirs": None, #TODO instance TBD
-    "motion": None, #TODO instance TBD
+    "uCT": None,  # TODO instance TBD
+    "nirs": None,  # TODO instance TBD
+    "motion": None,  # TODO instance TBD
 }
 
 MAP_2_UNITS = {
@@ -166,8 +166,14 @@ MAP_2_SPECIES = {
     "rattus norvegicus": ["Rattus norvegicus"]
 }
 
+bids2openMINDS_prop_dict = {
+    "MRAcquisitionType":"MRAcquisitionType",
+    "MTState":"MTState"
+}
 
-#sample_types = {
+MAP_2_MRACQUISITIONTYPE={}
+
+# sample_types = {
 #    "cell line": None, #TODO instance TBD
 #    "in vitro differentiated cells": None, #TODO instance TBD
 #    "primary cell": None, #TODO instance TBD
@@ -177,4 +183,4 @@ MAP_2_SPECIES = {
 #    "whole organisms": None, #TODO instance TBD
 #    "organoid": None, #TODO instance TBD
 #    "technical sample": None #TODO instance TBD
-#}
+# }

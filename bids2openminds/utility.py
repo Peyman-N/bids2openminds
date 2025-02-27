@@ -4,12 +4,13 @@ import os
 import re
 import gzip
 from warnings import warn
-
 import pandas as pd
 
 import openminds.latest.controlled_terms as controlled_terms
 from openminds.latest.core import Hash, QuantitativeValue, ContentType
 from openminds.latest.controlled_terms import UnitOfMeasurement
+
+from . import mapping
 
 
 def read_json(file_path: str) -> dict:
@@ -175,3 +176,44 @@ def detect_nifti_version(file_name, extension, file_size):
                 return ContentType.by_name("application/vnd.nifti.2")
 
     return None
+
+def extract_metadata(metadata, property):
+    """
+    Extracts the value of a specified property from metadata using a mapping dictionary.
+
+    The function looks up the corresponding property name in `mapping.bids2openMINDS_prop_dict` 
+    and retrieves its value from the provided metadata dictionary. If the property is not found, 
+    it returns None.
+
+    Args:
+        metadata (dict): A dictionary containing metadata.
+        property (str): The property key to be extracted.
+
+    Returns:
+        Any or None: The value of the specified property if found, otherwise None.
+    """
+    property_name_bids = mapping.bids2openMINDS_prop_dict[property]
+    
+    if property_name_bids in metadata:
+        return metadata[property_name_bids]
+    
+    return None
+
+def create_QuantitativeValue(value,unit):
+    """
+    Creates a QuantitativeValue object with the given value and unit.
+
+    If the value is None, the function returns None.
+
+    Args:
+        value (float or int or None): The numerical value of the quantity.
+        unit (str): The unit of measurement for the value.
+
+    Returns:
+        QuantitativeValue or None: A QuantitativeValue object if value is provided, otherwise None.
+    """
+
+    if value is None:
+        return None
+    
+    return QuantitativeValue(value=value, unit=UnitOfMeasurement.by_name(unit))

@@ -1,15 +1,11 @@
 import openminds.latest.neuroimaging as neuroimaging
 import openminds.latest.controlled_terms as controlled_terms
 import openminds.latest.core as omcore
+import warnings
+from utility import extract_metadata, create_QuantitativeValue
 from . import mapping
 
 
-def extract_metadata(metadata, property):
-    property_name_bids=mapping.bids2openMINDS_prop_dict[property]
-    if property_name_bids in metadata:
-        return metadata[property_name_bids]
-    else:
-        return None
 
 
 def create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name):
@@ -100,24 +96,126 @@ def create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name):
     mri_scanners.append(new_mri_scanner)
     return new_mri_scanner
 
-def create_mr_acquisition_type(metadata):
-    mr_acquisition_type_text=extract_metadata(metadata, "MRAcquisitionType")
-    if mr_acquisition_type_text is None:
+
+def create_MRI_scanner_usage(metadata, mri_scanner, dataset_full_name):
+
+    def create_mr_acquisition_type(metadata):
+        """
+        Extracts the MRI acquisition type from the given metadata and returns a controlled term 
+        if it is a recognized value. Otherwise, it issues a warning and returns None.
+
+        Args:
+            metadata (dict): A dictionary containing MRI metadata.
+
+        Returns:
+            controlled_terms.MRAcquisitionType or None: The corresponding MRI acquisition type 
+            if found in the mapping, otherwise None.
+
+        Warnings:
+            Issues a warning if the extracted MRI acquisition type is not recognized.
+        """
+        mr_acquisition_type_text = extract_metadata(metadata, "MRAcquisitionType")
+        
+        if mr_acquisition_type_text is None:
+            return None
+        
+        if mr_acquisition_type_text in mapping.MAP_2_MRACQUISITIONTYPE:
+            return controlled_terms.MRAcquisitionType.by_name(mr_acquisition_type_text)
+        
+        warnings.warn(f"The {mr_acquisition_type_text} is not an accepted value for MRAcquisitionType")
         return None
-    elif mr_acquisition_type_text in mapping.MAP_2_MRACQUISITIONTYPE:
-        return controlled_terms.MRAcquisitionType.by_name(mr_acquisition_type_text)
-    else:
+    
+    def create_mt_state(metadata):
+        """
+        Extracts the MTState value from the given metadata and converts it to a boolean.
+        
+        The function checks if the extracted value is "true" (case-insensitive) and returns `True`, 
+        or "false" (case-insensitive) and returns `False`. If the value is not recognized, a warning 
+        is issued, and None is returned.
+
+        Args:
+            metadata (dict): A dictionary containing MRI metadata.
+
+        Returns:
+            bool or None: `True` if the value is "true", `False` if the value is "false", 
+            otherwise `None`.
+
+        Warnings:
+            Issues a warning if the extracted MTState value is not "true" or "false".
+        """
+        mt_state_text = extract_metadata(metadata, "MTState")
+
+        if mt_state_text is None:
+            return None
+        
+        if mt_state_text.strip().lower() == "true":
+            return True
+        
+        if mt_state_text.strip().lower() == "false":
+            return False
+        
+        warnings.warn(f"The {mt_state_text} is not an accepted value for MTState, it can only be 'true' or 'false'.")
+        return None
+    
+    def create_echo_times(metadata):
+        """
+        Extracts echo times from the given metadata and converts them into QuantitativeValue objects.
+
+        The function supports:
+        - Lists of echo times (converted to a list of QuantitativeValue objects).
+        - Single string echo times (converted to a QuantitativeValue object).
+        - Separate "EchoTime1" and "EchoTime2" fields (if "echoTime" is missing).
+
+        Args:
+            metadata (dict): A dictionary containing MRI metadata.
+
+        Returns:
+            list[QuantitativeValue] or QuantitativeValue or None:
+                - A list of QuantitativeValue objects if multiple echo times exist.
+                - A single QuantitativeValue object if only one echo time is found.
+                - None if no valid echo time is present.
+        """
+        echo_times_bids = extract_metadata(metadata, "echoTime")
+
+        # If echoTime is a list, convert each item
+        if isinstance(echo_times_bids, list):
+            return [create_QuantitativeValue(item, "second") for item in echo_times_bids]
+
+        # If echoTime is a string, convert it to a QuantitativeValue object
+        if isinstance(echo_times_bids, str):
+            return create_QuantitativeValue(float(echo_times_bids), "second")
+
+        # If echoTime is not found, check EchoTime1 and EchoTime2
+        echo_times = []
+        flag_multiple_echo_time = False 
+
+        if "EchoTime1" in metadata:
+            echo_times.append(metadata["EchoTime1"])
+            flag_multiple_echo_time = True
+
+        if "EchoTime2" in metadata:
+            echo_times.append(metadata["EchoTime2"])
+            flag_multiple_echo_time = True
+
+        # If multiple echo times exist, convert them
+        if flag_multiple_echo_time:
+            return [create_QuantitativeValue(float(item), "second") for item in echo_times]
+
         return None
 
-def 
 
-def create_fMRI_scanner_usage(metadata, mri_scanner, dataset_full_name):
+
     mr_acquisition_type=create_mr_acquisition_type(metadata)
-    mt_state=extract_metadata(metadata, "MTState").strip().lower() == "true"
+    mt_state=create_mt_state(metadata)
+    dwell_time=create_QuantitativeValue(extract_metadata(metadata, "dwellTime"),"second")
+    echo_times=create_echo_times(metadata)
+    
+
 
 
 
 def create_fMRI_scanner_usage(metadata, mri_scanner, dataset_full_name):
+
 
 
 

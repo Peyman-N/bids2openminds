@@ -168,7 +168,11 @@ MAP_2_SPECIES = {
 
 bids2openMINDS_prop_dict = {
     "MRAcquisitionType":"MRAcquisitionType",
-    "MTState":"MTState"
+    "MTState":"MTState",
+    "dwellTime":"DwellTime",
+    "echoTime":"EchoTime",
+    
+
 }
 
 MAP_2_MRACQUISITIONTYPE={}

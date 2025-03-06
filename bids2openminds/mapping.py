@@ -171,8 +171,21 @@ bids2openMINDS_prop_dict = {
     "MTState":"MTState",
     "dwellTime":"DwellTime",
     "echoTime":"EchoTime",
+    "flipAngle":"FlipAngle",
+    "inversionTime":"InversionTime",
+    "nonlinearGradientCorrection":"NonlinearGradientCorrection",
+    "numberOfVolumesDiscardedByScanner":"NumberOfVolumesDiscardedByScanner",
+    "parallelAcquisitionTechnique":"ParallelAcquisitionTechnique"
+
     
 
+}
+
+MAP_2_PULSESEQUENCETYPE={
+    "MPRAGE":
+    "Gradient Echo EPI":"gradient-echo pulse sequence",
+    "Spin Echo EPI":"spin echo pulse sequence",
+    "Multiband gradient echo EPI":
 }
 
 MAP_2_MRACQUISITIONTYPE={}

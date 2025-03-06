@@ -217,3 +217,33 @@ def create_QuantitativeValue(value,unit):
         return None
     
     return QuantitativeValue(value=value, unit=UnitOfMeasurement.by_name(unit))
+
+
+def create_boolean(value, property_name="property"):
+    """
+    The function checks if the extracted value is "true" (case-insensitive) and returns `True`, 
+    or "false" (case-insensitive) and returns `False`. If the value is not recognized, a warning 
+    is issued, and None is returned.
+
+    Args:
+        metadata (dict): A dictionary containing MRI metadata.
+
+    Returns:
+        bool or None: `True` if the value is "true", `False` if the value is "false", 
+        otherwise `None`.
+
+    Warnings:
+        Issues a warning if the value is not "true" or "false".
+    """
+
+    if value is None:
+        return None
+    
+    if value.strip().lower() == "true":
+        return True
+    
+    if value.strip().lower() == "false":
+        return False
+    
+    warn(f"The {value} is not an accepted value for {property_name}, it can only be 'true' or 'false'.")
+    return None

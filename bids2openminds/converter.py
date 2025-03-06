@@ -38,7 +38,7 @@ def convert(input_path,  save_output=False, output_path=None, multiple_files=Fal
     behavioral_protocols, behavioral_protocols_dict = main.create_behavioral_protocol(
         bids_layout, collection)
 
-    [files_list, file_repository] = main.create_file(
+    [files_dict, file_repository] = main.create_file(
         layout_df, input_path, collection)
 
     dataset_version = main.create_dataset_version(

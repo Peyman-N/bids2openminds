@@ -2,7 +2,7 @@ import openminds.latest.neuroimaging as neuroimaging
 import openminds.latest.controlled_terms as controlled_terms
 import openminds.latest.core as omcore
 import warnings
-from utility import extract_metadata, create_QuantitativeValue
+from utility import extract_metadata, create_QuantitativeValue, create_boolean
 from . import mapping
 
 
@@ -97,7 +97,7 @@ def create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name):
     return new_mri_scanner
 
 
-def create_MRI_scanner_usage(metadata, mri_scanner, dataset_full_name):
+def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dict, filename, dataset_full_name):
 
     def create_mr_acquisition_type(metadata):
         """
@@ -125,37 +125,6 @@ def create_MRI_scanner_usage(metadata, mri_scanner, dataset_full_name):
         warnings.warn(f"The {mr_acquisition_type_text} is not an accepted value for MRAcquisitionType")
         return None
     
-    def create_mt_state(metadata):
-        """
-        Extracts the MTState value from the given metadata and converts it to a boolean.
-        
-        The function checks if the extracted value is "true" (case-insensitive) and returns `True`, 
-        or "false" (case-insensitive) and returns `False`. If the value is not recognized, a warning 
-        is issued, and None is returned.
-
-        Args:
-            metadata (dict): A dictionary containing MRI metadata.
-
-        Returns:
-            bool or None: `True` if the value is "true", `False` if the value is "false", 
-            otherwise `None`.
-
-        Warnings:
-            Issues a warning if the extracted MTState value is not "true" or "false".
-        """
-        mt_state_text = extract_metadata(metadata, "MTState")
-
-        if mt_state_text is None:
-            return None
-        
-        if mt_state_text.strip().lower() == "true":
-            return True
-        
-        if mt_state_text.strip().lower() == "false":
-            return False
-        
-        warnings.warn(f"The {mt_state_text} is not an accepted value for MTState, it can only be 'true' or 'false'.")
-        return None
     
     def create_echo_times(metadata):
         """
@@ -203,18 +172,43 @@ def create_MRI_scanner_usage(metadata, mri_scanner, dataset_full_name):
 
         return None
 
-
+    
 
     mr_acquisition_type=create_mr_acquisition_type(metadata)
-    mt_state=create_mt_state(metadata)
+    mt_state=create_boolean(extract_metadata(metadata, "MTState"), property_name="MTState")
     dwell_time=create_QuantitativeValue(extract_metadata(metadata, "dwellTime"),"second")
     echo_times=create_echo_times(metadata)
+    flip_angle=create_QuantitativeValue(extract_metadata(metadata, "flipAngle"), "arcdegree")
+    inversion_time=create_QuantitativeValue(extract_metadata(metadata, "inversionTime"), "second")
+    lookup_label=f"The scanner usage for {filename} of {dataset_full_name}"
+
+    file_associations_obj=[]
+    for file_association in file_associations:
+        if file_association.path in files_dict:
+            file_associations_obj.append(files_dict[file_association.path])
+
+    metadata_locations=file_associations_obj
+
+    nonlinear_gradient_correction=create_boolean(extract_metadata(metadata, "nonlinearGradientCorrection"), property_name="NonlinearGradientCorrection")
+    number_of_volumes_discarded_by_scanner=int(extract_metadata(metadata, "numberOfVolumesDiscardedByScanner"))
+    parallel_acquisition_technique=str(extract_metadata(metadata, "parallelAcquisitionTechnique"))
+    
+    """TODO
+    The implementation of `phase_encoding_direction` is pending as the controlled term is not yet finalized.  
+    """
+
+    pulse_sequence_type
     
 
 
 
 
-def create_fMRI_scanner_usage(metadata, mri_scanner, dataset_full_name):
+def create_fMRI_scanner_usage(metadata, mri_scanner, collection, file_associations, files_dict, filename, dataset_full_name):
+    scanner_usage=create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dict, filename, dataset_full_name)
+
+
+    collection.add(scanner_usage)
+    return scanner_usage
 
 
 
@@ -224,12 +218,14 @@ def create_fMRI_acquisition():
     return None
 
 
-def create_neuroimaging(bids_layout, collection, subject_dict, dataset_full_name):
+def create_neuroimaging(bids_layout, collection, files_dict, subject_dict, dataset_full_name):
     mri_scanners = [],
     nifti_files = bids_layout.get(extension=["nii.gz", "nii"])
     for file in nifti_files:
         metadata = file.get_metadata()
         entities = file.get_entities()
+        file_associations=file.get_associations()
+
         mri_scanner = create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name)
 
         if "session" in entities:
@@ -239,5 +235,5 @@ def create_neuroimaging(bids_layout, collection, subject_dict, dataset_full_name
 
         if "datatype" in entities:
             if entities["datatype"] == "func":
-                create_fMRI_scanner_usage(metadata, mri_scanner, collection, dataset_full_name)
+                create_fMRI_scanner_usage(metadata, mri_scanner, collection, file_associations, files_dict, file.filename, dataset_full_name)
                 create_fMRI_acquisition(metadata, mri_scanners, collection, dataset_full_name)

@@ -171,6 +171,18 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
             return [create_QuantitativeValue(float(item), "second") for item in echo_times]
 
         return None
+    
+    def create_pulse_sequence_type(metadata):
+
+        pulse_sequence_text=extract_metadata(metadata, "MRIPulseSequence")
+
+        if pulse_sequence_text in mapping.MAP_2_PULSESEQUENCETYPE:
+            return controlled_terms.MRAcquisitionType.by_name(mapping.MAP_2_PULSESEQUENCETYPE(pulse_sequence_text))
+        
+        try:
+            return controlled_terms.MRAcquisitionType.by_name(pulse_sequence_text)
+        except:
+            return None
 
     
 
@@ -197,7 +209,13 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
     The implementation of `phase_encoding_direction` is pending as the controlled term is not yet finalized.  
     """
 
-    pulse_sequence_type
+
+    pulse_sequence_type=create_pulse_sequence_type(metadata)
+
+    
+    
+
+    
     
 
 

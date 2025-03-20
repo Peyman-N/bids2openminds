@@ -182,10 +182,10 @@ bids2openMINDS_prop_dict = {
 }
 
 MAP_2_PULSESEQUENCETYPE={
-    "MPRAGE":
-    "Gradient Echo EPI":"gradient-echo pulse sequence",
-    "Spin Echo EPI":"spin echo pulse sequence",
-    "Multiband gradient echo EPI":
+#    "MPRAGE": None,
+    "Gradient Echo EPI" : "gradient-echo pulse sequence",
+    "Spin Echo EPI" : "spin echo pulse sequence",
+#    "Multiband gradient echo EPI" : None
 }
 
 MAP_2_MRACQUISITIONTYPE={}

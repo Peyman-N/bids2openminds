@@ -6,13 +6,12 @@ from utility import extract_metadata, create_QuantitativeValue, create_boolean
 from . import mapping
 
 
-
-
 def create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name):
     def _create_mri_scanner(metadata, dataset_full_name):
 
         if "Manufacturer" in metadata:
-            manufacturers = omcore.Organization(full_name=metadata["Manufacturer"])
+            manufacturers = omcore.Organization(
+                full_name=metadata["Manufacturer"])
         else:
             manufacturers = None
 
@@ -40,7 +39,8 @@ def create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name):
             magnetic_field_strength = None
 
         if "InstitutionName" in metadata:
-            institution = omcore.Organization(full_name=metadata["InstitutionName"])
+            institution = omcore.Organization(
+                full_name=metadata["InstitutionName"])
             if "InstitutionalDepartmentName" in metadata:
                 department_name = f"{metadata["InstitutionName"]} department of {metadata["InstitutionName"]}"
                 owner = omcore.Organization(
@@ -114,18 +114,19 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
         Warnings:
             Issues a warning if the extracted MRI acquisition type is not recognized.
         """
-        mr_acquisition_type_text = extract_metadata(metadata, "MRAcquisitionType")
-        
+        mr_acquisition_type_text = extract_metadata(
+            metadata, "MRAcquisitionType")
+
         if mr_acquisition_type_text is None:
             return None
-        
+
         if mr_acquisition_type_text in mapping.MAP_2_MRACQUISITIONTYPE:
             return controlled_terms.MRAcquisitionType.by_name(mr_acquisition_type_text)
-        
-        warnings.warn(f"The {mr_acquisition_type_text} is not an accepted value for MRAcquisitionType")
+
+        warnings.warn(
+            f"The {mr_acquisition_type_text} is not an accepted value for MRAcquisitionType")
         return None
-    
-    
+
     def create_echo_times(metadata):
         """
         Extracts echo times from the given metadata and converts them into QuantitativeValue objects.
@@ -156,7 +157,7 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
 
         # If echoTime is not found, check EchoTime1 and EchoTime2
         echo_times = []
-        flag_multiple_echo_time = False 
+        flag_multiple_echo_time = False
 
         if "EchoTime1" in metadata:
             echo_times.append(metadata["EchoTime1"])
@@ -171,68 +172,62 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
             return [create_QuantitativeValue(float(item), "second") for item in echo_times]
 
         return None
-    
+
     def create_pulse_sequence_type(metadata):
 
-        pulse_sequence_text=extract_metadata(metadata, "MRIPulseSequence")
+        pulse_sequence_text = extract_metadata(metadata, "MRIPulseSequence")
 
         if pulse_sequence_text in mapping.MAP_2_PULSESEQUENCETYPE:
             return controlled_terms.MRAcquisitionType.by_name(mapping.MAP_2_PULSESEQUENCETYPE(pulse_sequence_text))
-        
+
         try:
             return controlled_terms.MRAcquisitionType.by_name(pulse_sequence_text)
         except:
             return None
 
-    
+    mr_acquisition_type = create_mr_acquisition_type(metadata)
+    mt_state = create_boolean(extract_metadata(
+        metadata, "MTState"), property_name="MTState")
+    dwell_time = create_QuantitativeValue(
+        extract_metadata(metadata, "dwellTime"), "second")
+    echo_times = create_echo_times(metadata)
+    flip_angle = create_QuantitativeValue(
+        extract_metadata(metadata, "flipAngle"), "arcdegree")
+    inversion_time = create_QuantitativeValue(
+        extract_metadata(metadata, "inversionTime"), "second")
+    lookup_label = f"The scanner usage for {filename} of {dataset_full_name}"
 
-    mr_acquisition_type=create_mr_acquisition_type(metadata)
-    mt_state=create_boolean(extract_metadata(metadata, "MTState"), property_name="MTState")
-    dwell_time=create_QuantitativeValue(extract_metadata(metadata, "dwellTime"),"second")
-    echo_times=create_echo_times(metadata)
-    flip_angle=create_QuantitativeValue(extract_metadata(metadata, "flipAngle"), "arcdegree")
-    inversion_time=create_QuantitativeValue(extract_metadata(metadata, "inversionTime"), "second")
-    lookup_label=f"The scanner usage for {filename} of {dataset_full_name}"
-
-    file_associations_obj=[]
+    file_associations_obj = []
     for file_association in file_associations:
         if file_association.path in files_dict:
             file_associations_obj.append(files_dict[file_association.path])
 
-    metadata_locations=file_associations_obj
+    metadata_locations = file_associations_obj
 
-    nonlinear_gradient_correction=create_boolean(extract_metadata(metadata, "nonlinearGradientCorrection"), property_name="NonlinearGradientCorrection")
-    number_of_volumes_discarded_by_scanner=int(extract_metadata(metadata, "numberOfVolumesDiscardedByScanner"))
-    parallel_acquisition_technique=str(extract_metadata(metadata, "parallelAcquisitionTechnique"))
-    
+    nonlinear_gradient_correction = create_boolean(extract_metadata(
+        metadata, "nonlinearGradientCorrection"), property_name="NonlinearGradientCorrection")
+    number_of_volumes_discarded_by_scanner = int(
+        extract_metadata(metadata, "numberOfVolumesDiscardedByScanner"))
+    parallel_acquisition_technique = str(
+        extract_metadata(metadata, "parallelAcquisitionTechnique"))
+
     """TODO
     The implementation of `phase_encoding_direction` is pending as the controlled term is not yet finalized.  
     """
 
-
-    pulse_sequence_type=create_pulse_sequence_type(metadata)
-
-    
-    
-
-    
-    
-
-
+    pulse_sequence_type = create_pulse_sequence_type(metadata)
 
 
 def create_fMRI_scanner_usage(metadata, mri_scanner, collection, file_associations, files_dict, filename, dataset_full_name):
-    scanner_usage=create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dict, filename, dataset_full_name)
-
+    scanner_usage = create_MRI_scanner_usage(
+        metadata, mri_scanner, file_associations, files_dict, filename, dataset_full_name)
 
     collection.add(scanner_usage)
     return scanner_usage
 
 
-
-
 def create_fMRI_acquisition():
-    
+
     return None
 
 
@@ -242,9 +237,10 @@ def create_neuroimaging(bids_layout, collection, files_dict, subject_dict, datas
     for file in nifti_files:
         metadata = file.get_metadata()
         entities = file.get_entities()
-        file_associations=file.get_associations()
+        file_associations = file.get_associations()
 
-        mri_scanner = create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name)
+        mri_scanner = create_mri_scanner(
+            metadata, mri_scanners, collection, dataset_full_name)
 
         if "session" in entities:
             session = entities["session"]
@@ -253,5 +249,7 @@ def create_neuroimaging(bids_layout, collection, files_dict, subject_dict, datas
 
         if "datatype" in entities:
             if entities["datatype"] == "func":
-                create_fMRI_scanner_usage(metadata, mri_scanner, collection, file_associations, files_dict, file.filename, dataset_full_name)
-                create_fMRI_acquisition(metadata, mri_scanners, collection, dataset_full_name)
+                create_fMRI_scanner_usage(
+                    metadata, mri_scanner, collection, file_associations, files_dict, file.filename, dataset_full_name)
+                create_fMRI_acquisition(
+                    metadata, mri_scanners, collection, dataset_full_name)

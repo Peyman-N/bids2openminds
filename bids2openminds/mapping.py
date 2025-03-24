@@ -167,28 +167,28 @@ MAP_2_SPECIES = {
 }
 
 bids2openMINDS_prop_dict = {
-    "MRAcquisitionType":"MRAcquisitionType",
-    "MTState":"MTState",
-    "dwellTime":"DwellTime",
-    "echoTime":"EchoTime",
-    "flipAngle":"FlipAngle",
-    "inversionTime":"InversionTime",
-    "nonlinearGradientCorrection":"NonlinearGradientCorrection",
-    "numberOfVolumesDiscardedByScanner":"NumberOfVolumesDiscardedByScanner",
-    "parallelAcquisitionTechnique":"ParallelAcquisitionTechnique"
+    "MRAcquisitionType": "MRAcquisitionType",
+    "MTState": "MTState",
+    "dwellTime": "DwellTime",
+    "echoTime": "EchoTime",
+    "flipAngle": "FlipAngle",
+    "inversionTime": "InversionTime",
+    "nonlinearGradientCorrection": "NonlinearGradientCorrection",
+    "numberOfVolumesDiscardedByScanner": "NumberOfVolumesDiscardedByScanner",
+    "parallelAcquisitionTechnique": "ParallelAcquisitionTechnique"
 
-    
+
 
 }
 
-MAP_2_PULSESEQUENCETYPE={
-#    "MPRAGE": None,
-    "Gradient Echo EPI" : "gradient-echo pulse sequence",
-    "Spin Echo EPI" : "spin echo pulse sequence",
-#    "Multiband gradient echo EPI" : None
+MAP_2_PULSESEQUENCETYPE = {
+    #    "MPRAGE": None,
+    "Gradient Echo EPI": "gradient-echo pulse sequence",
+    "Spin Echo EPI": "spin echo pulse sequence",
+    #    "Multiband gradient echo EPI" : None
 }
 
-MAP_2_MRACQUISITIONTYPE={}
+MAP_2_MRACQUISITIONTYPE = {}
 
 # sample_types = {
 #    "cell line": None, #TODO instance TBD

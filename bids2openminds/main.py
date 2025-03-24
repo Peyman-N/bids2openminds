@@ -481,7 +481,7 @@ def create_file(layout_df, BIDS_path, collection):
     file2file_bundle_dic, _, file_repository = create_file_bundle(
         BIDS_path_absolute, BIDS_path_absolute, collection, is_file_repository=True)
 
-    files_dict={}
+    files_dict = {}
     for index, file in layout_df.iterrows():
         file_format = None
         content_description = None
@@ -537,7 +537,6 @@ def create_file(layout_df, BIDS_path, collection):
             storage_size=storage_size_obj,
         )
         collection.add(file)
-        files_dict[path]=file
-        
+        files_dict[path] = file
 
     return files_dict, file_repository

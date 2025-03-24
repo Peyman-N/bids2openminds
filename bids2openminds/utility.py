@@ -177,6 +177,7 @@ def detect_nifti_version(file_name, extension, file_size):
 
     return None
 
+
 def extract_metadata(metadata, property):
     """
     Extracts the value of a specified property from metadata using a mapping dictionary.
@@ -193,13 +194,14 @@ def extract_metadata(metadata, property):
         Any or None: The value of the specified property if found, otherwise None.
     """
     property_name_bids = mapping.bids2openMINDS_prop_dict[property]
-    
+
     if property_name_bids in metadata:
         return metadata[property_name_bids]
-    
+
     return None
 
-def create_QuantitativeValue(value,unit):
+
+def create_QuantitativeValue(value, unit):
     """
     Creates a QuantitativeValue object with the given value and unit.
 
@@ -215,7 +217,7 @@ def create_QuantitativeValue(value,unit):
 
     if value is None:
         return None
-    
+
     return QuantitativeValue(value=value, unit=UnitOfMeasurement.by_name(unit))
 
 
@@ -238,12 +240,12 @@ def create_boolean(value, property_name="property"):
 
     if value is None:
         return None
-    
+
     if value.strip().lower() == "true":
         return True
-    
+
     if value.strip().lower() == "false":
         return False
-    
+
     warn(f"The {value} is not an accepted value for {property_name}, it can only be 'true' or 'false'.")
     return None

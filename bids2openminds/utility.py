@@ -5,9 +5,10 @@ import re
 import gzip
 from warnings import warn
 import pandas as pd
+import nibabel as nib
 
 import openminds.latest.controlled_terms as controlled_terms
-from openminds.latest.core import Hash, QuantitativeValue, ContentType
+from openminds.latest.core import Hash, QuantitativeValue, ContentType, QuantitativeValueArray
 from openminds.latest.controlled_terms import UnitOfMeasurement
 
 from . import mapping
@@ -201,7 +202,7 @@ def extract_metadata(metadata, property):
     return None
 
 
-def create_QuantitativeValue(value, unit):
+def create_quantitative_value(value, unit):
     """
     Creates a QuantitativeValue object with the given value and unit.
 
@@ -219,6 +220,13 @@ def create_QuantitativeValue(value, unit):
         return None
 
     return QuantitativeValue(value=value, unit=UnitOfMeasurement.by_name(unit))
+
+
+def create_quantitative_value_array(values, unit):
+
+    if values is None:
+        return None
+    return QuantitativeValueArray(values=values, unit=UnitOfMeasurement.by_name(unit))
 
 
 def create_boolean(value, property_name="property"):
@@ -249,3 +257,12 @@ def create_boolean(value, property_name="property"):
 
     warn(f"The {value} is not an accepted value for {property_name}, it can only be 'true' or 'false'.")
     return None
+
+
+def extract_nifit_voxel_size(file_path):
+    nifti_img = nib.load(file_path)
+    voxel_size_text = nifti_img.header.get_zooms()
+    if len(voxel_size_text) > 3:
+        voxel_size_text = voxel_size_text[:2]
+
+    return QuantitativeValueArray(values=voxel_size_text, unit=UnitOfMeasurement.by_name("millimeter"))

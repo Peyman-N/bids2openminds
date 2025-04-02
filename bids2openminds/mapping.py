@@ -175,7 +175,11 @@ bids2openMINDS_prop_dict = {
     "inversionTime": "InversionTime",
     "nonlinearGradientCorrection": "NonlinearGradientCorrection",
     "numberOfVolumesDiscardedByScanner": "NumberOfVolumesDiscardedByScanner",
-    "parallelAcquisitionTechnique": "ParallelAcquisitionTechnique"
+    "parallelAcquisitionTechnique": "ParallelAcquisitionTechnique",
+    "repetitionTime": "RepetitionTime",
+    "sliceTiming": "SliceTiming",
+    "spoilingState": "SpoilingState"
+
 
 
 

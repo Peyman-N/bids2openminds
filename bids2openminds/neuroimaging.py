@@ -2,7 +2,7 @@ import openminds.latest.neuroimaging as neuroimaging
 import openminds.latest.controlled_terms as controlled_terms
 import openminds.latest.core as omcore
 import warnings
-from utility import extract_metadata, create_QuantitativeValue, create_boolean
+from utility import extract_metadata, create_quantitative_value, create_quantitative_value_array, create_boolean, extract_nifit_voxel_size
 from . import mapping
 
 
@@ -97,7 +97,7 @@ def create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name):
     return new_mri_scanner
 
 
-def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dict, filename, dataset_full_name):
+def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dict, filename, dataset_full_name, file_path, subject_state):
 
     def create_mr_acquisition_type(metadata):
         """
@@ -149,11 +149,11 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
 
         # If echoTime is a list, convert each item
         if isinstance(echo_times_bids, list):
-            return [create_QuantitativeValue(item, "second") for item in echo_times_bids]
+            return [create_quantitative_value(item, "second") for item in echo_times_bids]
 
         # If echoTime is a string, convert it to a QuantitativeValue object
         if isinstance(echo_times_bids, str):
-            return create_QuantitativeValue(float(echo_times_bids), "second")
+            return create_quantitative_value(float(echo_times_bids), "second")
 
         # If echoTime is not found, check EchoTime1 and EchoTime2
         echo_times = []
@@ -169,7 +169,7 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
 
         # If multiple echo times exist, convert them
         if flag_multiple_echo_time:
-            return [create_QuantitativeValue(float(item), "second") for item in echo_times]
+            return [create_quantitative_value(float(item), "second") for item in echo_times]
 
         return None
 
@@ -188,12 +188,12 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
     mr_acquisition_type = create_mr_acquisition_type(metadata)
     mt_state = create_boolean(extract_metadata(
         metadata, "MTState"), property_name="MTState")
-    dwell_time = create_QuantitativeValue(
+    dwell_time = create_quantitative_value(
         extract_metadata(metadata, "dwellTime"), "second")
     echo_times = create_echo_times(metadata)
-    flip_angle = create_QuantitativeValue(
+    flip_angle = create_quantitative_value(
         extract_metadata(metadata, "flipAngle"), "arcdegree")
-    inversion_time = create_QuantitativeValue(
+    inversion_time = create_quantitative_value(
         extract_metadata(metadata, "inversionTime"), "second")
     lookup_label = f"The scanner usage for {filename} of {dataset_full_name}"
 
@@ -217,10 +217,48 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
 
     pulse_sequence_type = create_pulse_sequence_type(metadata)
 
+    """TODO
+    The implementation of `radiofrequency_coil_type` is pending as the controlled term is not yet finalized.  
+    """
 
-def create_fMRI_scanner_usage(metadata, mri_scanner, collection, file_associations, files_dict, filename, dataset_full_name):
+    repetition_time = create_quantitative_value(
+        extract_metadata(metadata, "repetitionTime"), "second")
+    slice_timing = create_quantitative_value_array(
+        extract_metadata(metadata, "repetitionTime"), "second")
+    spoiling_state = create_boolean(
+        extract_metadata(metadata, "spoilingState"))
+
+    used_specimen = subject_state
+
+    voxel_size = extract_nifit_voxel_size(file_path)
+
+    scanner_usage = neuroimaging.MRIScannerUsage(
+        mr_acquisition_type=mr_acquisition_type,
+        mt_state=mt_state,
+        device=mri_scanner,
+        dwell_time=dwell_time,
+        echo_times=echo_times,
+        flip_angle=flip_angle,
+        inversion_time=inversion_time,
+        lookup_label=lookup_label,
+        metadata_locations=metadata_locations,
+        nonlinear_gradient_correction=nonlinear_gradient_correction,
+        number_of_volumes_discarded_by_scanner=number_of_volumes_discarded_by_scanner,
+        parallel_acquisition_technique=parallel_acquisition_technique,
+        pulse_sequence_type=pulse_sequence_type,
+        repetition_time=repetition_time,
+        slice_timing=slice_timing,
+        spoiling_state=spoiling_state,
+        used_specimen=used_specimen,
+        voxel_size=voxel_size,
+    )
+    return scanner_usage
+
+
+def create_fMRI_scanner_usage(
+        metadata, mri_scanner, collection, file_associations, files_dict, filename, dataset_full_name, file_path, subject_state):
     scanner_usage = create_MRI_scanner_usage(
-        metadata, mri_scanner, file_associations, files_dict, filename, dataset_full_name)
+        metadata, mri_scanner, file_associations, files_dict, filename, dataset_full_name, file_path, subject_state)
 
     collection.add(scanner_usage)
     return scanner_usage
@@ -247,9 +285,12 @@ def create_neuroimaging(bids_layout, collection, files_dict, subject_dict, datas
         else:
             session = ""
 
+        subject = entities["subject"]
+        subject_state = subject_dict[subject][session]
         if "datatype" in entities:
             if entities["datatype"] == "func":
                 create_fMRI_scanner_usage(
-                    metadata, mri_scanner, collection, file_associations, files_dict, file.filename, dataset_full_name)
+                    metadata, mri_scanner, collection,
+                    file_associations, files_dict, file.filename, dataset_full_name, file.path, subject_state)
                 create_fMRI_acquisition(
                     metadata, mri_scanners, collection, dataset_full_name)

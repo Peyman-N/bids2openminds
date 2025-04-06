@@ -34,7 +34,8 @@ MAP_2_TECHNIQUES = {
     "angio": ["angiography"],
     "M0map": ["equilibrium magnetization mapping"],
     "FLASH": ["fast-low-angle-shot pulse sequence"],  # TODO instance TBD
-    "FLAIR": ["fluid attenuated inversion recovery pulse sequence"],  # TODO instance TBD
+    # TODO instance TBD
+    "FLAIR": ["fluid attenuated inversion recovery pulse sequence"],
     "UNIT1": None,  # TODO instance TBD
     "inplaneT1": [
         "T1 pulse sequence",
@@ -178,7 +179,8 @@ bids2openMINDS_prop_dict = {
     "parallelAcquisitionTechnique": "ParallelAcquisitionTechnique",
     "repetitionTime": "RepetitionTime",
     "sliceTiming": "SliceTiming",
-    "spoilingState": "SpoilingState"
+    "spoilingState": "SpoilingState",
+    "acquisitionDuration": "AcquisitionDuration",
 
 
 

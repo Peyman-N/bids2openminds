@@ -259,14 +259,19 @@ def create_fMRI_scanner_usage(
         metadata, mri_scanner, collection, file_associations, files_dict, filename, dataset_full_name, file_path, subject_state):
     scanner_usage = create_MRI_scanner_usage(
         metadata, mri_scanner, file_associations, files_dict, filename, dataset_full_name, file_path, subject_state)
-
     collection.add(scanner_usage)
     return scanner_usage
 
 
-def create_fMRI_acquisition():
+def create_MRI_acquisition(metadata, MRI_scanner_usage):
 
-    return None
+
+def create_fMRI_acquisition(metadata, MRI_scanner_usage):
+
+    acquisition_duration = create_quantitative_value(
+        extract_metadata(metadata, "acquisitionDuration"), "arcdegree")
+
+    return
 
 
 def create_neuroimaging(bids_layout, collection, files_dict, subject_dict, dataset_full_name):
@@ -289,8 +294,8 @@ def create_neuroimaging(bids_layout, collection, files_dict, subject_dict, datas
         subject_state = subject_dict[subject][session]
         if "datatype" in entities:
             if entities["datatype"] == "func":
-                create_fMRI_scanner_usage(
+                MRI_scanner_usage = create_fMRI_scanner_usage(
                     metadata, mri_scanner, collection,
                     file_associations, files_dict, file.filename, dataset_full_name, file.path, subject_state)
                 create_fMRI_acquisition(
-                    metadata, mri_scanners, collection, dataset_full_name)
+                    metadata, MRI_scanner_usage, collection)

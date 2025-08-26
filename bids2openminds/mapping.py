@@ -181,10 +181,21 @@ bids2openMINDS_prop_dict = {
     "sliceTiming": "SliceTiming",
     "spoilingState": "SpoilingState",
     "acquisitionDuration": "AcquisitionDuration",
+    "contrastAgent": "ContrastBolusIngredient",
+    "delayAfterTrigger": "DelayAfterTrigger",
+    "delayTime": "DelayTime",
+    "numberOfVolumesDiscardedByUser": "NumberOfVolumesDiscardedByUser",
+    "volumeTiming": "VolumeTiming"
+}
 
-
-
-
+MAP_2_ContrastBolusIngredient = {
+    "IODINE": None,
+    "GADOLINIUM": None,
+    "CARBON DIOXIDE": "carbon dioxide",
+    "BARIUM": None,
+    "XENON": None,
+    "UNKNOWN": None,
+    "NONE": None
 }
 
 MAP_2_PULSESEQUENCETYPE = {

@@ -263,15 +263,92 @@ def create_fMRI_scanner_usage(
     return scanner_usage
 
 
-def create_MRI_acquisition(metadata, MRI_scanner_usage):
+def create_contrast_agent(metadata):
+
+    contrast_agent_text = extract_metadata(metadata, "contrastAgent")
+
+    if contrast_agent_text in mapping.MAP_2_ContrastBolusIngredient:
+        return controlled_terms.MolecularEntity.by_name(mapping.MAP_2_ContrastBolusIngredient(contrast_agent_text))
+
+    try:
+        return controlled_terms.MolecularEntity.by_name(contrast_agent_text)
+    except:
+        return None
 
 
-def create_fMRI_acquisition(metadata, MRI_scanner_usage):
+def create_structural_MRI_acquisition(metadata, file, subject_name, subject_state, datset_version, MRI_scanner_usage, short_name):
+
+    lookup_label = f"{short_name}_mri_acquisition_{subject_name}"
+    contrast_agent = create_contrast_agent(metadata)
+
+    structural_MRI_acquisition = neuroimaging.StructuralMRIAcquisition(
+        contrast_agent=contrast_agent,
+        description=None,
+        device=MRI_scanner_usage,
+        end_time=None,
+        inputs=subject_state,
+        is_part_of=datset_version,
+        lookup_label=lookup_label,
+        outputs=file,
+        protocols=None,
+        specimen_orientation=None,
+        start_time=None,
+        study_targets=None)
+
+    return structural_MRI_acquisition
+
+
+def create_fMRI_acquisition(metadata, file, subject_name, subject_state, datset_version, MRI_scanner_usage, short_name):
+
+    lookup_label = f"{short_name}_mri_acquisition_{subject_name}"
+
+    contrast_agent = create_contrast_agent(metadata)
 
     acquisition_duration = create_quantitative_value(
         extract_metadata(metadata, "acquisitionDuration"), "arcdegree")
 
-    return
+    delay_after_trigger = create_quantitative_value(
+        extract_metadata(metadata, "delayAfterTrigger"), "second")
+
+    delay_time = create_quantitative_value(
+        extract_metadata(metadata, "delayTime"), "second")
+
+    number_of_volumes_discarded_by_user = extract_metadata(
+        metadata, "numberOfVolumesDiscardedByUser")
+
+    # TODO the field_maps
+
+    # TODO structural_mri
+
+    # TODO sbref
+    functional_MRI_acquisition = neuroimaging.FunctionalMRIAcquisition(
+        acquisition_duration=acquisition_duration,
+        behavioral_protocols=None,
+        contrast_agent=contrast_agent,
+        custom_property_sets=None,
+        delay_after_trigger=delay_after_trigger,
+        delay_time=delay_time,
+        description=None,
+        device=MRI_scanner_usage,
+        end_time=None,
+        field_maps=None,
+        inputs=subject_state,
+        is_part_of=datset_version,
+        lookup_label=lookup_label,
+        number_of_volumes_discarded_by_user=None,
+        outputs=None,
+        performed_by=None,
+        preparation_design=None,
+        protocols=None,
+        sbref=None,
+        specimen_orientation=None,
+        start_time=None,
+        structural_mri=None,
+        study_targets=None,
+        volume_timing=None,
+    )
+
+    return functional_MRI_acquisition
 
 
 def create_neuroimaging(bids_layout, collection, files_dict, subject_dict, dataset_full_name):

@@ -181,6 +181,7 @@ bids2openMINDS_prop_dict = {
     "sliceTiming": "SliceTiming",
     "spoilingState": "SpoilingState",
     "acquisitionDuration": "AcquisitionDuration",
+    "receiveCoilName": "ReceiveCoilName",
     "contrastAgent": "ContrastBolusIngredient",
     "delayAfterTrigger": "DelayAfterTrigger",
     "delayTime": "DelayTime",

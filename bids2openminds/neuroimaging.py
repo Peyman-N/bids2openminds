@@ -99,7 +99,7 @@ def create_mri_scanner(metadata, mri_scanners, collection, dataset_full_name):
 
 def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dict, filename, dataset_full_name, file_path, subject_state):
 
-    def create_mr_acquisition_type(metadata):
+    def create_mr_spatial_encoding_type(metadata):
         """
         Extracts the MRI acquisition type from the given metadata and returns a controlled term 
         if it is a recognized value. Otherwise, it issues a warning and returns None.
@@ -108,24 +108,29 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
             metadata (dict): A dictionary containing MRI metadata.
 
         Returns:
-            controlled_terms.MRAcquisitionType or None: The corresponding MRI acquisition type 
+            controlled_terms.MRSpatialEncoding or None: The corresponding MRI acquisition type 
             if found in the mapping, otherwise None.
 
         Warnings:
             Issues a warning if the extracted MRI acquisition type is not recognized.
         """
-        mr_acquisition_type_text = extract_metadata(
-            metadata, "MRAcquisitionType")
+        mr_spatial_encoding_type_text = extract_metadata(
+            metadata, "MRSpatialEncoding")
 
-        if mr_acquisition_type_text is None:
+        if mr_spatial_encoding_type_text is None:
             return None
 
-        if mr_acquisition_type_text in mapping.MAP_2_MRACQUISITIONTYPE:
-            return controlled_terms.MRAcquisitionType.by_name(mr_acquisition_type_text)
+        if mr_spatial_encoding_type_text in mapping.MAP_2_MRSpatialEncoding:
+            return controlled_terms.MRSpatialEncoding.by_name(mr_spatial_encoding_type_text)
 
         warnings.warn(
-            f"The {mr_acquisition_type_text} is not an accepted value for MRAcquisitionType")
+            f"The {mr_spatial_encoding_type_text} is not an accepted value for MRAcquisitionType")
         return None
+
+    def create_phase_encoding_direction(metadata):
+
+        phase_encoding_direction_text = extract_metadata(
+            metadata, "MRSpatialEncoding")
 
     def create_echo_times(metadata):
         """
@@ -185,7 +190,8 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
         except:
             return None
 
-    mr_acquisition_type = create_mr_acquisition_type(metadata)
+    mr_spatial_encoding_type = create_mr_spatial_encoding_type(metadata)
+
     mt_state = create_boolean(extract_metadata(
         metadata, "MTState"), property_name="MTState")
     dwell_time = create_quantitative_value(
@@ -211,20 +217,21 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
     parallel_acquisition_technique = str(
         extract_metadata(metadata, "parallelAcquisitionTechnique"))
 
-    """TODO
-    The implementation of `phase_encoding_direction` is pending as the controlled term is not yet finalized.  
-    """
+    phase_encoding_direction = create_phase_encoding_direction(metadata)
 
     pulse_sequence_type = create_pulse_sequence_type(metadata)
 
     """TODO
     The implementation of `radiofrequency_coil_type` is pending as the controlled term is not yet finalized.  
     """
+    receiveCoilName = extract_metadata(metadata, "receiveCoilName")
 
     repetition_time = create_quantitative_value(
         extract_metadata(metadata, "repetitionTime"), "second")
+
     slice_timing = create_quantitative_value_array(
         extract_metadata(metadata, "repetitionTime"), "second")
+
     spoiling_state = create_boolean(
         extract_metadata(metadata, "spoilingState"))
 
@@ -233,7 +240,7 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
     voxel_size = extract_nifit_voxel_size(file_path)
 
     scanner_usage = neuroimaging.MRIScannerUsage(
-        mr_acquisition_type=mr_acquisition_type,
+        mr_spatial_encoding_type=mr_spatial_encoding_type,
         mt_state=mt_state,
         device=mri_scanner,
         dwell_time=dwell_time,

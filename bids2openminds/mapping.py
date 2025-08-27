@@ -181,10 +181,26 @@ bids2openMINDS_prop_dict = {
     "sliceTiming": "SliceTiming",
     "spoilingState": "SpoilingState",
     "acquisitionDuration": "AcquisitionDuration",
+    "receiveCoilName": "ReceiveCoilName"
 
 
 
 
+}
+MAP_2_MRSpatialEncoding = {
+    "1D": "",
+    "2D": "",
+    "3D": ""
+}
+
+
+MAP_2_PhaseEncodingDirection = {
+    "i": [1, 0, 0],
+    "j": [0, 1, 0],
+    "k": [0, 0, 1],
+    "-i": [-1, 0, 0],
+    "-j": [0, -1, 0],
+    "-k": [0, 0, -1]
 }
 
 MAP_2_PULSESEQUENCETYPE = {

@@ -124,7 +124,7 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
             return controlled_terms.MRSpatialEncoding.by_name(mr_spatial_encoding_type_text)
 
         warnings.warn(
-            f"The {mr_spatial_encoding_type_text} is not an accepted value for MRAcquisitionType")
+            f"The {mr_spatial_encoding_type_text} is not an accepted value for MRSpatialEncoding")
         return None
 
     def create_phase_encoding_direction(metadata):
@@ -183,10 +183,10 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
         pulse_sequence_text = extract_metadata(metadata, "MRIPulseSequence")
 
         if pulse_sequence_text in mapping.MAP_2_PULSESEQUENCETYPE:
-            return controlled_terms.MRAcquisitionType.by_name(mapping.MAP_2_PULSESEQUENCETYPE(pulse_sequence_text))
+            return controlled_terms.MRIPulseSequence.by_name(mapping.MAP_2_PULSESEQUENCETYPE(pulse_sequence_text))
 
         try:
-            return controlled_terms.MRAcquisitionType.by_name(pulse_sequence_text)
+            return controlled_terms.MRIPulseSequence.by_name(pulse_sequence_text)
         except:
             return None
 
@@ -305,9 +305,9 @@ def create_structural_MRI_acquisition(metadata, file, subject_name, subject_stat
     return structural_MRI_acquisition
 
 
-def create_fMRI_acquisition(metadata, file, subject_name, subject_state, datset_version, MRI_scanner_usage, short_name):
+def create_fMRI_acquisition(metadata, file, subject_identifier, subject_state, datset_version, MRI_scanner_usage, short_name):
 
-    lookup_label = f"{short_name}_mri_acquisition_{subject_name}"
+    lookup_label = f"{short_name}_mri_acquisition_{subject_identifier}"
 
     contrast_agent = create_contrast_agent(metadata)
 
@@ -320,8 +320,8 @@ def create_fMRI_acquisition(metadata, file, subject_name, subject_state, datset_
     delay_time = create_quantitative_value(
         extract_metadata(metadata, "delayTime"), "second")
 
-    number_of_volumes_discarded_by_user = extract_metadata(
-        metadata, "numberOfVolumesDiscardedByUser")
+    number_of_volumes_discarded_by_user = int(extract_metadata(
+        metadata, "numberOfVolumesDiscardedByUser"))
 
     # TODO the field_maps
 
@@ -342,8 +342,8 @@ def create_fMRI_acquisition(metadata, file, subject_name, subject_state, datset_
         inputs=subject_state,
         is_part_of=datset_version,
         lookup_label=lookup_label,
-        number_of_volumes_discarded_by_user=None,
-        outputs=None,
+        number_of_volumes_discarded_by_user=number_of_volumes_discarded_by_user,
+        outputs=file,
         performed_by=None,
         preparation_design=None,
         protocols=None,
@@ -358,7 +358,10 @@ def create_fMRI_acquisition(metadata, file, subject_name, subject_state, datset_
     return functional_MRI_acquisition
 
 
-def create_neuroimaging(bids_layout, collection, files_dict, subject_dict, dataset_full_name):
+def create_image_sequence()
+
+
+def create_neuroimaging(bids_layout, collection, datset_version, files_dict, subject_dict, short_name):
     mri_scanners = [],
     nifti_files = bids_layout.get(extension=["nii.gz", "nii"])
     for file in nifti_files:
@@ -367,7 +370,7 @@ def create_neuroimaging(bids_layout, collection, files_dict, subject_dict, datas
         file_associations = file.get_associations()
 
         mri_scanner = create_mri_scanner(
-            metadata, mri_scanners, collection, dataset_full_name)
+            metadata, mri_scanners, collection, short_name)
 
         if "session" in entities:
             session = entities["session"]
@@ -375,11 +378,13 @@ def create_neuroimaging(bids_layout, collection, files_dict, subject_dict, datas
             session = ""
 
         subject = entities["subject"]
+        subject_identifier = subject.internal_identifier
         subject_state = subject_dict[subject][session]
         if "datatype" in entities:
             if entities["datatype"] == "func":
                 MRI_scanner_usage = create_fMRI_scanner_usage(
                     metadata, mri_scanner, collection,
-                    file_associations, files_dict, file.filename, dataset_full_name, file.path, subject_state)
-                create_fMRI_acquisition(
-                    metadata, MRI_scanner_usage, collection)
+                    file_associations, files_dict, file.filename, short_name, file.path, subject_state)
+                fMRI_acquisition = create_fMRI_acquisition(
+                    metadata, file, subject_identifier, subject_state, datset_version, MRI_scanner_usage, short_name)
+                image_sequence = create_image_sequence(metadata, file)

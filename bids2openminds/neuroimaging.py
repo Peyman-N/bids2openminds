@@ -101,14 +101,14 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
 
     def create_mr_spatial_encoding_type(metadata):
         """
-        Extracts the MRI acquisition type from the given metadata and returns a controlled term 
+        Extracts the MRI acquisition type from the given metadata and returns a controlled term
         if it is a recognized value. Otherwise, it issues a warning and returns None.
 
         Args:
             metadata (dict): A dictionary containing MRI metadata.
 
         Returns:
-            controlled_terms.MRSpatialEncoding or None: The corresponding MRI acquisition type 
+            controlled_terms.MRSpatialEncoding or None: The corresponding MRI acquisition type
             if found in the mapping, otherwise None.
 
         Warnings:
@@ -130,7 +130,17 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
     def create_phase_encoding_direction(metadata):
 
         phase_encoding_direction_text = extract_metadata(
-            metadata, "MRSpatialEncoding")
+            metadata, "phaseEncodingDirection")
+
+        if phase_encoding_direction_text in mapping.MAP_2_PhaseEncodingDirection:
+            phase_encoding_direction_value = mapping.MAP_2_PhaseEncodingDirection[
+                phase_encoding_direction_text]
+            phase_encoding_direction = omcore.QuantitativeValueArray(
+                value=phase_encoding_direction_value)
+            return None
+        else:
+            warnings.warn(
+                f"{phase_encoding_direction_text} is not a valid phase encoding direction")
 
     def create_echo_times(metadata):
         """
@@ -157,7 +167,7 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
             return [create_quantitative_value(item, "second") for item in echo_times_bids]
 
         # If echoTime is a string, convert it to a QuantitativeValue object
-        if isinstance(echo_times_bids, str):
+        if isinstance(echo_times_bids, (str, int, float)):
             return create_quantitative_value(float(echo_times_bids), "second")
 
         # If echoTime is not found, check EchoTime1 and EchoTime2
@@ -222,9 +232,9 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
     pulse_sequence_type = create_pulse_sequence_type(metadata)
 
     """TODO
-    The implementation of `radiofrequency_coil_type` is pending as the controlled term is not yet finalized.  
+    The implementation of `radiofrequency_coil_type` is pending as the controlled term is not yet finalized.
     """
-    receiveCoilName = extract_metadata(metadata, "receiveCoilName")
+    receive_coil_name = extract_metadata(metadata, "receiveCoilName")
 
     repetition_time = create_quantitative_value(
         extract_metadata(metadata, "repetitionTime"), "second")
@@ -254,6 +264,7 @@ def create_MRI_scanner_usage(metadata, mri_scanner, file_associations, files_dic
         parallel_acquisition_technique=parallel_acquisition_technique,
         pulse_sequence_type=pulse_sequence_type,
         repetition_time=repetition_time,
+        receive_coil_name=receive_coil_name,
         slice_timing=slice_timing,
         spoiling_state=spoiling_state,
         used_specimen=used_specimen,
